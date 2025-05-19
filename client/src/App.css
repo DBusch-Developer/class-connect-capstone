@@ -1,0 +1,16 @@
+/* Fonts */
+.numans {
+    font-family: "Numans"
+}
+
+.rubik {
+    font-family: "Rubik"
+}
+
+html {
+    background-color: black;
+}
+
+.image:hover {
+    transform: scale(1.2);
+  }
