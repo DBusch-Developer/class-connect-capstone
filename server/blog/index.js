@@ -4,6 +4,8 @@ import blogGetMany from "./blogGetMany.js";
 import blogGetOne from "./blogGetOne.js";
 import blogUpdate from "./blogUpdate.js";
 import blogDelete from "./blogDelete.js";
+import blogCommentCreate from "./blogCommentCreate.js";
+import blogCommentDelete from "./blogCommentDelete.js";
 
 const blogRouter = express.Router();
 
@@ -22,5 +24,10 @@ blogRouter.put("/:id", blogUpdate);
 // Delete one blog
 blogRouter.delete("/:id", blogDelete);
 
+//Blog Comment Create
+blogRouter.post("/:id/comments", blogCommentCreate);
+
+//Blog Comment Delete
+blogRouter.delete("/:id/comments/:commentId", blogCommentDelete);
 
 export default blogRouter;

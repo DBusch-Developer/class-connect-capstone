@@ -8,27 +8,25 @@ const initialState = {
     {
       title: "",
       author: "",
-      authorTitle: "",
       profilePhoto: "",
       category: "",
       readTime: "",
       body: "",
       coverPhoto: "",
       date: "",
-      comment: "",
+      comments: "",
     },
   ],
   blog: {
     title: "",
     author: "",
-    authorTitle: "",
     profilePhoto: "",
     category: "",
     readTime: "",
     body: "",
     coverPhoto: "",
     date: "",
-    comment: "",
+    comments: [],
   },
 };
 
@@ -36,26 +34,24 @@ export const addBlog = createAsyncThunk("blog/add", async (data) => {
   const {
     title,
     author,
-    authorTitle,
     profilePhoto,
     category,
     readTime,
     body,
     coverPhoto,
     date,
-    comment,
+    comments,
   } = data;
   const response = await blogService.addBlog(
     title,
     author,
-    authorTitle,
     profilePhoto,
     category,
     readTime,
     body,
     coverPhoto,
     date,
-    comment
+    comments
   );
   return response.data;
 });
@@ -72,28 +68,49 @@ export const getBlog = createAsyncThunk("blog/getBlog", async (id) => {
   return response.data;
 });
 
-export const updateBlog = createAsyncThunk("blog/update", async (blog) => {
-  const response = await blogService.updateBlog(blog);
+export const updateBlog = createAsyncThunk(
+  "blog/update",
+  async ({ id, blog }) => {
+    console.log("id ", id, "blog", blog);
+    const response = await blogService.updateBlog(id, blog);
+    return response.data;
+  }
+);
+
+export const deleteBlog = createAsyncThunk("blog/delete", async (id) => {
+  const response = await blogService.deleteBlog(id);
   return response.data;
 });
 
-export const deleteBlog = createAsyncThunk("blog/delete", async (id) => {
-    const response = await blogService.deleteBlog(id);
+export const blogCommentCreate = createAsyncThunk(
+  "blog/comments",
+  async ({ id, addComment }) => {
+    const response = await blogService.blogCommentCreate(id, addComment);
     return response.data;
-  });
+  }
+);
 
+export const blogCommentDelete = createAsyncThunk(
+  "blog/commentDelete",
+  async (commentInfo) => {
+    const { blogId, commentId } = commentInfo;
+    const response = await blogService.blogCommentDelete(blogId, commentId);
+    return response.data;
+  }
+);
 
 export const blogSlice = createSlice({
   name: "blog",
   initialState,
   reducers: {
     blogSearched(state, action) {
-        console.log("blogSearched searchText", action.payload)
-        state.searchText = action.payload
-    }
+      console.log("blogSearched searchText", action.payload);
+      state.searchText = action.payload;
+    },
   },
   extraReducers: (builder) => {
     builder
+
       //blogs list
       .addCase(blogList.pending, (state, action) => {
         console.log("blogSlice blogList.pending", action.payload);
@@ -160,7 +177,7 @@ export const blogSlice = createSlice({
         console.log("blogSlice updateBlog.fulfilled", action.payload);
         console.log(action.payload);
         state.loading = false;
-        state.blog = action.payload;
+        state.blog = action.payload.blog;
         state.success = true;
       })
       .addCase(updateBlog.rejected, (state, action) => {
@@ -169,24 +186,66 @@ export const blogSlice = createSlice({
         state.success = false;
       })
 
-          // // Delete Blog
-          .addCase(deleteBlog.pending, (state, action) => {
-            console.log("blogSlice deleteBlog.pending", action.payload);
-            state.loading = true;
-            state.success = false;
-          })
-          .addCase(deleteBlog.fulfilled, (state, action) => {
-            console.log("blogSlice deleteBlog.fulfilled", action.payload);
-            console.log(action.payload);
-            state.loading = false;
-            state.blog = action.payload;
-            state.success = true;
-          })
-          .addCase(deleteBlog.rejected, (state, action) => {
-            console.log("blogSlice deleteBlog.rejected", action.payload);
-            state.loading = false;
-            state.success = false;
-          });
+      // // Delete Blog
+      .addCase(deleteBlog.pending, (state, action) => {
+        console.log("blogSlice deleteBlog.pending", action.payload);
+        state.loading = true;
+        state.success = false;
+      })
+      .addCase(deleteBlog.fulfilled, (state, action) => {
+        console.log("blogSlice deleteBlog.fulfilled", action.payload);
+        console.log(action.payload);
+        state.loading = false;
+        state.blog = action.payload;
+        state.success = true;
+      })
+      .addCase(deleteBlog.rejected, (state, action) => {
+        console.log("blogSlice deleteBlog.rejected", action.payload);
+        state.loading = false;
+        state.success = false;
+      })
+
+      //Blog Comment Create
+      .addCase(blogCommentCreate.pending, (state, action) => {
+        console.log("blogSlice blogCommentCreate.pending", action.payload);
+        state.loading = true;
+        state.success = false;
+      })
+      .addCase(blogCommentCreate.fulfilled, (state, action) => {
+        console.log(
+          "blogSlice blogCommentCreate.fulfilled",
+          action.payload.blog
+        );
+        console.log(action.payload);
+        state.loading = false;
+        state.blog = action.payload.blog;
+        state.success = true;
+      })
+      .addCase(blogCommentCreate.rejected, (state, action) => {
+        console.log("blogSlice blogCommentCreate.rejected", action.payload);
+        state.loading = false;
+        state.success = false;
+      })
+
+      //Blog Comment Delete
+      .addCase(blogCommentDelete.pending, (state, action) => {
+        console.log("blogSlice blogCommentDelete.pending", action.payload);
+        state.loading = true;
+      })
+      .addCase(blogCommentDelete.fulfilled, (state, action) => {
+        console.log(
+          "blogSlice blogCommentDelete.fulfilled",
+          action.payload.blog
+        );
+        console.log(action.payload);
+        state.loading = false;
+        state.blog = action.payload.blog;
+        state.success = true;
+      })
+      .addCase(blogCommentDelete.rejected, (state, action) => {
+        console.log("blogSlice blogCommentDelete.rejected", action.payload);
+        state.loading = false;
+      });
   },
 });
 

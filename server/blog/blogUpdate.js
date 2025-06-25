@@ -1,23 +1,35 @@
 import blogModel from "./blogModel.js";
 
 const blogUpdate = async (req, res) => {
+  console.log({id: req.params.id, body: req.body, req: req});
   const { id } = req.params;
-  const { title, author, authorTitle, profilePhoto, category, readTime, body, coverPhoto } =
-    req.body;
+  console.log("blogUpdate req.body", req.body);
+  const {
+    title,
+    author,
+    profilePhoto,
+    category,
+    readTime,
+    body,
+    coverPhoto,
+    isPublished,
+    isArchived
+  } = req.body;
   // Validation goes here
-  const date = new Date()
+  const date = new Date();
   const blog = await blogModel.findOneAndUpdate(
     { _id: id },
     {
       title,
       author,
-      authorTitle,
       profilePhoto,
       category,
       readTime,
       body,
       coverPhoto,
-      date
+      date,
+      isPublished,
+      isArchived
     }
   );
   console.log("blog", blog);

@@ -2,12 +2,20 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
 import { useSelector, useDispatch } from "react-redux";
 import { addBlog } from "../redux/blogSlice";
+import { toast } from "react-toastify";
 
 const AddBlog = () => {
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+
+  const { blog } = useSelector((state) => state.blog);
+  const { user } = useSelector((state) => state.users);
+
+  console.log("user", user);
+
   const [blogForm, setBlogForm] = useState({
-    author: "",
-    authorTitle: "",
-    profilePhoto: "",
+    profilePhoto: user.avatar,
+    author: user.username,
     category: "",
     readTime: "",
     title: "",
@@ -17,42 +25,46 @@ const AddBlog = () => {
     date: new Date(),
   });
 
-  const { blog } = useSelector((state) => state.blog);
+  const [avatarFile, setAvatarFile] = useState(null);
 
-  const navigate = useNavigate();
-  const dispatch = useDispatch();
+  useEffect(() => {
+    console.log("blogForm", blogForm);
+  }, [blogForm]);
 
-  const [showSuccess, setShowSuccess] = useState(false);
+  const toBase64 = (file) =>
+    new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = () => resolve(reader.result);
+      reader.onerror = reject;
+    });
 
-  useEffect(() => {}, [blogForm]);
+  const handleCoverPhotoUpload = async (e) => {
+    console.log("handleFile", e);
+    if (e.target.files) {
+      const testString64 = await toBase64(e.target.files[0]);
+      setBlogForm({ ...blogForm, coverPhoto: testString64 });
+      console.log(testString64);
+      setAvatarFile(e.target.files[0]); // Store the file for potential future use
+    }
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    // const addBlog = await axios.post(
-    //   `${import.meta.env.VITE_NODE_SERVER}/blog`,
-    //   blogForm
-    // );
-    // if (addBlog.data.success === true) {
-    //   setBlogs([...blogs.reverse(), addBlog.data.blog].reverse());
-    //   setShowSuccess(true);
-    //   console.log(addBlog);
-    //   setTimeout(() => {
-    //     navigate("/"); // Navigate back to main blog list
-    //   }, 2000);
-    // }
-    setBlogForm({
-      author: blogForm.author,
-      authorTitle: blogForm.authorTitle,
-      profilePhoto: blogForm.profilePhoto,
-      category: blogForm.category,
-      readTime: blogForm.readTime,
-      title: blogForm.title,
-      body: blogForm.body,
-      coverPhoto: blogForm.coverPhoto,
-      date: new Date(),
+    console.log("user in handleSubmit", user);
+    const isAdmin = user?.role?.includes("Admin");
+    const blogData = {
+      ...blogForm,
+      isPublished: isAdmin ? true : false,
+      isArchived: false, // optional: set default
+    };
+    dispatch(addBlog(blogData));
+    toast("Blog created successfully, awaiting approval to be published.", {
+      position: "bottom-right",
+      autoClose: 5000,
+      className: "numans font-bold",
+      closeOnClick: true,
     });
-
-    dispatch(addBlog({ ...blogForm }));
     navigate("/blog-list");
   };
 
@@ -66,7 +78,7 @@ const AddBlog = () => {
           <div className="grid gap-4 sm:grid-cols-2 sm:gap-6">
             <div className="sm:col-span-2">
               <label
-                htmlFor="blog-post-title"
+                htmlFor="title"
                 className="block mb-2 text-15 font-medium text-[#6ecfd5] "
               >
                 Blog Post Title
@@ -78,103 +90,12 @@ const AddBlog = () => {
                   setBlogForm({ ...blogForm, title: e.target.value })
                 }
                 type="text"
-                name="blog-post-title"
-                id="blog-post-title"
+                name="title"
+                id="title"
                 className=" bg-neutral-300 border border-gray-300 text-black placeholder:text-gray-500 text-15 rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 placeholder-gray-400 dark:text-black dark:focus:ring-gray-500 dark:focus:border-gray-500"
                 placeholder="Type article heading here..."
                 required="required"
               />
-            </div>
-            <div className="w-full">
-              <label
-                htmlFor="author-name"
-                className="block mb-2 text-15 font-medium text-[#6ecfd5]"
-              >
-                Author Name
-              </label>
-              <input
-                value={blogForm.author}
-                onChange={(e) =>
-                  setBlogForm({ ...blogForm, author: e.target.value })
-                }
-                type="text"
-                name="author-name"
-                id="author-name"
-                className="bg-neutral-300 border border-gray-300 text-black placeholder:text-gray-500 border border-gray-300 text-15 rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 placeholder-gray-400 dark:text-black dark:focus:ring-gray-500 dark:focus:border-gray-500"
-                placeholder="Your name"
-                required
-              />
-              {/* //   <label for="firstName"><b>First Name</b></label>
-              //   <input id="first-name" type="text" placeholder="Enter First Name" name="firstName" */}
-              {/* //        required/>
-              /> */}
-            </div>
-            <div className="w-full">
-              <label
-                htmlFor="author-title"
-                className="block mb-2 text-15 font-medium text-[#6ecfd5]"
-              >
-                Author Title
-              </label>
-              <input
-                value={blogForm.authorTitle}
-                onChange={(e) =>
-                  setBlogForm({
-                    ...blogForm,
-                    authorTitle: e.target.value,
-                  })
-                }
-                type="text"
-                name="author-title"
-                id="author-title"
-                className="bg-neutral-300 placeholder:text-gray-500 border border-gray-300 text-black  border border-gray-300  text-15 rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 placeholder-gray-400 dark:text-black dark:focus:ring-gray-500 dark:focus:border-gray-500"
-                placeholder="Your Title"
-                required
-              />
-            </div>
-            <div className="col-span-full">
-              <label
-                htmlFor="photo"
-                className="block text-15 font-medium text-[#6ecfd5]"
-              >
-                Profile Photo
-              </label>
-              <div className="mt-2 flex items-center gap-x-3">
-                <svg
-                  className="h-12 w-12 text-gray-400"
-                  viewBox="0 0 24 24"
-                  fill="currentColor"
-                  aria-hidden="true"
-                  data-slot="icon"
-                >
-                  <path
-                    fillRule="evenodd"
-                    d="M18.685 19.097A9.723 9.723 0 0 0 21.75 12c0-5.385-4.365-9.75-9.75-9.75S2.25 6.615 2.25 12a9.723 9.723 0 0 0 3.065 7.097A9.716 9.716 0 0 0 12 21.75a9.716 9.716 0 0 0 6.685-2.653Zm-12.54-1.285A7.486 7.486 0 0 1 12 15a7.486 7.486 0 0 1 5.855 2.812A8.224 8.224 0 0 1 12 20.25a8.224 8.224 0 0 1-5.855-2.438ZM15.75 9a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0Z"
-                    clipRule="evenodd"
-                  />
-                </svg>
-
-                {/* <input
-                className=" block w-full text-sm text-gray-900 border border-gray-300 rounded bg-gray-50 dark:text-gray-400  dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400"
-                aria-describedby="user_avatar_help"
-                id="user_avatar"
-                type="text"
-                value={blogForm.profilePhoto}
-                onChange={(e) =>
-                  setBlogForm({ ...blogForm, profilePhoto: e.target.value })
-                }
-              /> */}
-                <input
-                  value={blogForm.profilePhoto}
-                  onChange={(e) =>
-                    setBlogForm({ ...blogForm, profilePhoto: e.target.value })
-                  }
-                  className="bg-neutral-300 border border-gray-300 text-gray-500 placeholder:text-gray-500 border border-gray-300 text-15 rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-white dark:text-black dark:focus:ring-gray-500 dark:focus:border-gray-500"
-                  type="file"
-                  id="myFile"
-                  name="filename"
-                />
-              </div>
             </div>
 
             <div>
@@ -283,26 +204,13 @@ const AddBlog = () => {
                     </span>
                   </label>
                 </div>
-                {/* <input
-                value={blogForm.coverPhoto}
-                id="file-upload"
-                name="file-upload"
-                type="text"
-                // className="sr-only"
-                className="rounded-md"
-                onChange={(e) =>
-                  setBlogForm({ ...blogForm, coverPhoto: e.target.value })
-                }
-              /> */}
+
                 <input
-                  value={blogForm.coverPhoto}
                   id="file-upload"
                   name="file-upload"
                   type="file"
                   className="sr-only bg-black"
-                  onChange={(e) =>
-                    setBlogForm({ ...blogForm, coverPhoto: e.target.value })
-                  }
+                  onChange={handleCoverPhotoUpload}
                 />
                 <p className="text-xs/5 font-med black ">
                   PNG, JPG, GIF up to 10MB

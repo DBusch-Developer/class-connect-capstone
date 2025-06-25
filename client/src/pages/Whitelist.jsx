@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import react from "../assets/images/react.jpg";
 import reactBootstrap from "../assets/images/react-bootstrap.jpg";
 import bootstrap from "../assets/images/bootstrap.jpg";
@@ -50,6 +51,9 @@ import persevere from "../assets/images/persevere.jpg";
 import gitlab from "../assets/images/gitlab.jpg";
 
 const Whitelist = () => {
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
   return (
     <div className="pr-5 pl-5">
       <div className="text-[#6ecfd5] pt-44 numans text-7xl text-center mb-13">
