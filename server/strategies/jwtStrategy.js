@@ -16,6 +16,7 @@ passport.use(
     try {
       console.log("passport jwt jwtPayload",jwtPayload)
       const user = await userModel.findOne({ _id: jwtPayload._id });
+      console.log("passport jwt user",user)
       if (user) {
         return done(null, user);
       } else {

@@ -29,14 +29,15 @@ export const authLogin = createAsyncThunk("auth/login", async (credentials) => {
   return response.data
 })
 
-export const checkLogin = createAsyncThunk("auth/checkLogin", async (token) => {
+export const checkLogin = createAsyncThunk("auth/status", async (token) => {
   const response = await authService.checkLogin(token)
   // console.log(response)
   return response.data
 })
 
-export const logout = createAsyncThunk("auth/logout", async (token) => {
-  const response = await authService.logout(token)
+export const logout = createAsyncThunk("auth/logout", async (logoutInfo) => {
+  const { token, username } = logoutInfo
+  const response = await authService.logout(token, username)
   // console.log(response)
   return response.data
 })
@@ -52,8 +53,8 @@ export const authSlice = createSlice({
         state.loading = true
       })
       .addCase(authLogin.fulfilled, (state, action) => {
-        // state.authUser = { ...action.payload.user }
-        // console.log(action.payload)
+        state.authUser = { ...action.payload.user }
+        console.log(action.payload)
         state.loading = false
         state.isLoggedIn = true
         state.user = { ...action.payload.user }

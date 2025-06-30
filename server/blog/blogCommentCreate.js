@@ -2,10 +2,12 @@ import blogModel from "./blogModel.js"
 
 const blogCommentCreate = async (req, res) => {
   const { id } = req.params
-  const { username, timeStamp, comment } = req.body
+  const { username, timeStamp, comment, profilePhoto } = req.body
+  console.log("req.body", req.body)
+  console.log("id", id)
 
   const newComment = await blogModel.find({ _id: id })
-  const tempComment = { timeStamp, username, comment }
+  const tempComment = { timeStamp, username, comment, profilePhoto }
 
   newComment[0].comments.push(tempComment)
 

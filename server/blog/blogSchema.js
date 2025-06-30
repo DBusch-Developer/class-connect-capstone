@@ -15,6 +15,7 @@ const blogSchema = new Schema({
       username: String,
       comment: String,
       timeStamp: { type: Date, default: Date.now },
+      profilePhoto: String,
     },
   ],
   isPublished: Boolean,

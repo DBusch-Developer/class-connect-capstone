@@ -1,25 +1,25 @@
-import blogModel from "./blogModel.js"
+import blogModel from "./blogModel.js";
 
 const blogCommentDelete = async (req, res) => {
-  const { blogId, commentId } = req.params
+  const { id, commentId } = req.params;
 
   //Validation
-  if (!blogId || blogId == "" || !commentId || commentId == "") {
-    res.status(500).json({ message: "Blog comment information not valid." })
+  if (!id || id == "" || !commentId || commentId == "") {
+    res.status(500).json({ message: "Blog comment information not valid." });
   } else {
     const deleteComment = await blogModel.updateOne(
-      { _id: blogId },
+      { _id: id },
       {
-        $pull: { comments: { _id: commentId } }
+        $pull: { comments: { _id: commentId } },
       }
-    )
-    const getBlog = await blogModel.findOne({ _id: blogId })
-    console.log("deleteComment", deleteComment)
-    console.log("getBlog", getBlog)
+    );
+    const getBlog = await blogModel.findOne({ _id: id });
+    console.log("deleteComment", deleteComment);
+    console.log("getBlog", getBlog);
     res
       .status(200)
-      .json({ success: true, message: "Comment deleted.", blog: getBlog })
+      .json({ success: true, message: "Comment deleted.", blog: getBlog });
   }
-}
+};
 
-export default blogCommentDelete
+export default blogCommentDelete;

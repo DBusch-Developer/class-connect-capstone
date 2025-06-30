@@ -18,8 +18,8 @@ import PrivateRoute from "./components/PrivateRoute";
 import Footer from "./components/Footer";
 import { userGetAll } from "./redux/userSlice";
 import { checkLogin } from "./redux/authSlice";
-import { ToastContainer } from "react-toastify"
-import "react-toastify/dist/ReactToastify.css"
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import "./App.css";
 
 function App() {
@@ -35,7 +35,7 @@ function App() {
   useEffect(() => {
     if (user.token) {
       const checkToken = async () => {
-        const loginToken = user.token.split(",")[0];
+        const loginToken = sessionStorage.getItem("token");
         dispatch(checkLogin(loginToken));
       };
       checkToken();

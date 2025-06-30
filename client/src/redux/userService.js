@@ -36,3 +36,5 @@ const userService = {
 
 }
 export default userService
+
+//It is hard to trouble shoot with just returning the axios call so you can set the axios call to a variable called response and then return that response. You can console.log before and after the axios call to see if you are getting your data before and after to better determine where the error is coming from

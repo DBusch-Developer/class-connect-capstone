@@ -65,7 +65,7 @@ const AddBlog = () => {
       className: "numans font-bold",
       closeOnClick: true,
     });
-    navigate("/blog-list");
+    navigate("/dashboard");
   };
 
   return (

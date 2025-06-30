@@ -42,13 +42,16 @@ const BlogDetail = () => {
     e.preventDefault();
     setAddComment({
       ...addComment,
-      username: loggedInUser,
+      username: user.username,
+      profilePhoto: user.avatar
     });
     dispatch(blogCommentCreate({ id, addComment }));
     setAddComment({
       ...addComment,
       comment: "",
       timeStamp: new Date(),
+      username: user.username,
+      profilePhoto: user.avatar
     });
   };
 
@@ -165,14 +168,10 @@ const BlogDetail = () => {
           <div className="flex flex-col mt-10" key={index}>
             <div className="inline-flex justify-between items-center">
               <div className="inline-flex justify-between items-center gap-x-4">
-                {blog.profilePhoto ? (
-                  <img
-                    className="rounded-full border-white w-7 h-7"
-                    src={`${user.avatar}`}
-                  />
-                ) : (
-                  <div className="text-white text-xs">No Avatar</div>
-                )}
+                <img
+                  className="rounded-full border-white w-7 h-7"
+                  src={`${comment.profilePhoto}`}
+                />
 
                 <div className="text-neutral-200">{comment.username}</div>
                 <div>

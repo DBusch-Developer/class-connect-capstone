@@ -31,8 +31,12 @@ const userSchema = new Schema({
     type: String,
     default: "",
   },
+  authStrategy: {
+    type: String,
+    default: "local",
+  },
   token: {
-    type: [String],
+    type: [sessionSchema],
   },
 });
 

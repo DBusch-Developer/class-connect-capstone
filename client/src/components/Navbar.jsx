@@ -8,14 +8,14 @@ const Navbar = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  const { isLoggedIn } = useSelector((state) => state.auth);
+  const { isLoggedIn, user } = useSelector((state) => state.auth);
 
   const handleLogout = async () => {
-    //Get token from sessionStorage
+    //Get token from rage
     const token = sessionStorage.getItem("token");
     if (token) {
       const logoutToken = token.split(",")[0];
-      dispatch(logout(logoutToken));
+      dispatch(logout({ token: logoutToken, username: user.username }));
       navigate("/");
     }
   };
